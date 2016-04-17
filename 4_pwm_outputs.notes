@@ -1,0 +1,58 @@
+
+void init_led_pwm(pin) {
+  /*
+   * Based on these instructions to enable PWM on 4 pins:  http:www.technoblogy.com/show?LE0
+   *
+   * Timer/Counter0 configuration:  (current value of timer0 is TCNT0) (for some reason, avr made this timer a bit messy)
+   *
+   * COM0A[1:0] == 11:  configures PB0 such that COM0A0 is set to clear OC0A on compare match
+   * COM0B[1:0] == 11:  configures PB1 such that COM0B0 is set to clear OC0B on compare match
+   * WGM[1:0] == 11 and WGM02 == 0:  together, define Fast PWM mode.
+   * CS0[1:0] == 11: set prescalar to 64
+   *
+   *
+   * Timer/Counter1 configuration  (current value of timer1 is TCNT1)
+   *
+   * CTC == 1: Timer is reset to 00 in clock cycle after compare match with OCR1C
+   * PWM1A == 1: enables PWM mode with comparator OCR1A.  counter resets after compare match with OCR1C
+   * COM1A[1:0] == 11: OC1A set on compare match. Cleared when TCNT1 == 00
+   * CS1[2:0] == 111: set prescalar to 64 (overflow once every 1 / (8mhz/64) * 256 seconds) or 2.048ms
+   * PWM1b == 1: enables PWM mode with comparator OCR1B.  counter resets after compare match with OCR1C
+   * COM1B[1:0] == 11: OC1B set on compare match. Cleared when TCNT1 == 00  (basically, says OC1B defines when led toggles on/off)
+   *
+   *
+   * Timer1 interrupts (need to define associated ISR functions, ISR(TIMER1_COMPA_vect) and ISR(TIMER1_OVF_vect)
+   *
+   * OCIE1A == 1: enables Timer/Counter1 Compare MatchA interrupt
+   * (fyi:  OCIE1B == 1: enables timer1 match2 interrupt)
+   * TOIE1: enables timer1 overflow interrupt (and in TIFR the overflow flag TOV1 == 1)
+   */
+  // Configure counter/timer0 for fast PWM on PB0 and PB1
+  TCCR0A = 3<<COM0A0 | 3<<COM0B0 | 3<<WGM00;
+  TCCR0B = 0<<WGM02 | 3<<CS00;
+  // Configure counter/timer1 for fast PWM on PB4
+  TCCR1 = 1<<CTC1 | 1<<PWM1A | 3<<COM1A0 | 7<<CS10;
+  GTCCR = 1<<PWM1B | 3<<COM1B0;
+  // Interrupts on OC1A match and overflow
+  TIMSK |= 1<<OCIE1A | 1<<TOIE1;
+
+ // Finally, must set pin modes to output
+ DDRB |= _BV(pin); /* set pin to output mode */
+ DDRB |= _BV(PB1);
+ DDRB |= _BV(PB3);  // and DDRB the other pins too!
+
+  /*
+   * set pwm outputs
+   * OCR0A = abs(i);
+   * OCR0B = 255-abs(i);
+   * OCR1A = abs(i);  managed via the ISR routines, I think
+   * OCR1B = 255-abs(i);
+   *
+   * ISR(TIMER1_COMPA_vect) {
+   *   if (bit_is_clear(TIFR,TOV1)) PORTB |= _BV(PB3);
+   * }
+   * ISR(TIMER1_OVF_vect) {
+   *   PORTB &= ~_BV(PB3);  [> if I wanted a 4th pwm <]
+   * }
+   */
+}

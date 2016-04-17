@@ -1,0 +1,82 @@
+
+/*
+ * Useful examples of how to set/clear pins
+ */
+// void set_pins (void) {
+//
+//
+// FIRST, set pins to be output
+//
+// DDRB = 0b00001000;
+// DDRB = _BV(PB4) | _BV(PB3) | _BV(PB1) | _BV(PB2);
+// DDRB = 1<<DDB0 | 1<<DDB1 | 1<<DDB2 | 1<<DDB3 | 1<DDB4 | 1<<DDB5;
+// DDRB = 1<<DDB0 | 1<<DDB1 | 1<<DDB2 | 1<<DDB3 | 1<DDB4 | 1<<DDB5;
+// DDRB = 1<<DDB0 | 1<<DDB1;  // enable both PWM pins
+//
+//THEN, you can set high/low:
+// // flash# 1:
+// // set PB3 high
+// [> PORTB = 0b00001000; <]
+// [> PORTB |= _BV(PB3) <]
+// [> PORTB = _BV(PB3); <]
+
+// if (bit_is_clear(PINB,3)) {
+  // PORTB = _BV(PB3);
+// }
+
+// _delay_ms(10);
+// // set PB3 low
+// [> PORTB = 0b00000000; <]
+// [> PORTB &= ~_BV(PB3) <]
+// PORTB = ~_BV(PB3);
+// _delay_ms(19);
+// }
+//
+
+
+
+/*
+ * Useful example of how to share boolean values
+ */
+/* BOOL_flags is a simple way to store boolean information for many boolean
+ * values inside a byte.  We do this to save space.  Since there are no proper
+ * boolean values, each boolean would require 8 bits of space */
+#define BOOL1 0x01
+#define BOOL2 0x02
+#define BOOL3 0x04
+#define BOOL4 0x08
+#define BOOL5 0x10
+#define BOOL6 0x20
+#define BOOL7 0x40
+#define BOOL8 0x80
+char BOOL_flags;
+
+
+/*
+ * Old LED Fast PWM
+ */
+/*
+ * fast pwm configuration for blinking an led (see link in comments above)
+ *
+ *   COMOA0/COMOB0 to 2 (binary 10): Compare Match Output Mode needs to be 'Clear on Match. Set at Bottom'
+ *   WGM0[2:0] to 3 (binary 011):  this is the Waveform Generation Mode which we set to Fast PWM.
+ *
+ *   PWM1A = 1: This disables the use of Output Compare Unit A from Timer 1 (OC1A) as that pin is shared with OC0B.
+ *   COM1A0 = 0: disconnects timer events from pin output
+ *   CS00/CS10 = 1: This tells Timer 0/1 NOT to use a prescaler.
+ *
+ *   PWM1B = 0: This enables the use of Output Compare Unit B from Timer 1 (OC1B).
+ *
+ *   To adjust the LED's pwm, define OCR0A = <<number between 0 and 255>>;
+ */
+/*
+ * #define init_led_pwm() {\
+ *   TCCR0A = 2<<COM0A0 | 2<<COM0B0 | 3<<WGM00;\
+ *   TCCR0B = 0<<WGM02 | 1<<CS00;\
+ *   TCCR1 = 0<<PWM1A | 0<<COM1A0 | 1<<CS10;\
+ *   GTCCR = 1<<PWM1B | 2<<COM1B0;\
+ *   DDRB |= _BV(PB0); [> set pin to output mode <]\
+ * }
+ */
+
+
