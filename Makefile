@@ -24,5 +24,5 @@ flash:
 	$(AVRDUDE) -U flash:w:main.hex:i
 
 clean:
-	rm -f main.hex main.elf main.o
+	rm -f main.hex main.elf *.o
 
