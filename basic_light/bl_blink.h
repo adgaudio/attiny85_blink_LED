@@ -26,7 +26,7 @@ void bl_blink_anomaly();
 
 /* Array of all blink routines */
 typedef void (*bl_blink_routine)();
-extern const bl_blink_routine bl_blink_all_routines[];
-extern const int bl_blink_num_routines;
+const bl_blink_routine bl_blink_all_routines[];
+const int bl_blink_num_routines;
 
 #endif /* __BL_BLINK_H__ */

@@ -8,7 +8,7 @@
  * Help from various sources:
  * - attiny85 datasheet:  http://www.atmel.com/images/atmel-2586-avr-8-bit-microcontroller-attiny25-attiny45-attiny85_datasheet.pdf
  * - avr libc reference manual: http://www.atmel.com/webdoc/AVRLibcReferenceManual/
- * - fast PWM (led):  http://www.re-innovation.co.uk/web12/index.php/en/blog-75/305-fast-pwm-on-attiny85
+
  *
  * The connections to the ATTiny are as follows:
  * ATTinyInfo
